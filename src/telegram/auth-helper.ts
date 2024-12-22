@@ -9,7 +9,6 @@ export class AuthHelper {
         const result = this.parseInitData(telegramInitData)
         const initData = result.second
         const secretKey = this.createHmac('sha256', 'WebAppData', botToken)
-        console.log(secretKey)
         const initDataHash = this.hmacHex(secretKey, initData)
         return initDataHash === hash
     }

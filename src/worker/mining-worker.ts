@@ -1,5 +1,5 @@
-import type { ActiveUser } from '../dto/active_user'
-import MiningLogicConfig from '../config/mechanic/mining_logic_config.ts'
+import type { ActiveUser } from '../dto/active-user'
+import MiningLogicConfig from '../config/mechanic/mining-logic-config.ts'
 
 export class MiningWorker {
     private users: ActiveUser[] = []
