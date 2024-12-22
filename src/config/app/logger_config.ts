@@ -1,15 +1,14 @@
-import { createLogger, format, transports } from 'winston';
-import DailyRotateFile from 'winston-daily-rotate-file';
-import * as fs from 'fs';
-
+import { createLogger, format, transports } from 'winston'
+import DailyRotateFile from 'winston-daily-rotate-file'
+import * as fs from 'fs'
 
 const LoggerConf = {
     dirPath: process.env.LOGS_DIR_PATH || 'logs/',
-    devMode: process.env.LOGGER_DEV_MODE === 'true'
-};
+    devMode: process.env.LOGGER_DEV_MODE === 'true',
+}
 
 if (!fs.existsSync(LoggerConf.dirPath)) {
-    fs.mkdirSync(LoggerConf.dirPath, { recursive: true });
+    fs.mkdirSync(LoggerConf.dirPath, { recursive: true })
 }
 
 const transportError = new DailyRotateFile({
@@ -18,8 +17,8 @@ const transportError = new DailyRotateFile({
     zippedArchive: true,
     maxSize: '20m',
     maxFiles: '14d',
-    level: 'error'
-});
+    level: 'error',
+})
 
 const transportDebug = new DailyRotateFile({
     filename: `${LoggerConf.dirPath}/debug-%DATE%.log`,
@@ -27,8 +26,8 @@ const transportDebug = new DailyRotateFile({
     zippedArchive: true,
     maxSize: '20m',
     maxFiles: '14d',
-    level: 'debug'
-});
+    level: 'debug',
+})
 
 const transportWarn = new DailyRotateFile({
     filename: `${LoggerConf.dirPath}/warn-%DATE%.log`,
@@ -36,8 +35,8 @@ const transportWarn = new DailyRotateFile({
     zippedArchive: true,
     maxSize: '20m',
     maxFiles: '14d',
-    level: 'warn'
-});
+    level: 'warn',
+})
 
 const transportInfo = new DailyRotateFile({
     filename: `${LoggerConf.dirPath}/info-%DATE%.log`,
@@ -45,26 +44,22 @@ const transportInfo = new DailyRotateFile({
     zippedArchive: true,
     maxSize: '20m',
     maxFiles: '14d',
-    level: 'info'
-});
+    level: 'info',
+})
 
 const transportsArray = [
     transportError,
     transportDebug,
     transportWarn,
     transportInfo,
-];
-
+]
 
 if (LoggerConf.devMode) {
-    transportsArray.push(new transports.Console());
+    transportsArray.push(new transports.Console())
 }
 
 export const logger = createLogger({
     level: 'debug',
-    format: format.combine(
-        format.timestamp(),
-        format.json()
-    ),
-    transports: transportsArray
-});
+    format: format.combine(format.timestamp(), format.json()),
+    transports: transportsArray,
+})

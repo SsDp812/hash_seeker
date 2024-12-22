@@ -1,24 +1,25 @@
 {
-  "name": "hashseeker-backend",
-  "module": "index.ts",
-  "type": "module",
-  "scripts": {
-    "dev": "bun run ./src/index.ts",
-    "format": "npx prettier . --write"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "prettier": "3.4.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@elysiajs/html": "^1.1.1",
-    "bunorm": "^0.0.1",
-    "elysia": "^1.1.26",
-    "postgres": "^3.4.5",
-    "winston": "^3.17.0",
-    "winston-daily-rotate-file": "^5.0.0"
-  }
+    "name": "hashseeker-backend",
+    "module": "index.ts",
+    "type": "module",
+    "scripts": {
+        "dev": "bun run ./src/index.ts",
+        "format": "npx prettier . --write"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "prettier": "3.4.2"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@elysiajs/html": "^1.1.1",
+        "bunorm": "^0.0.1",
+        "elysia": "^1.1.26",
+        "grammy": "^1.33.0",
+        "postgres": "^3.4.5",
+        "winston": "^3.17.0",
+        "winston-daily-rotate-file": "^5.0.0"
+    }
 }
