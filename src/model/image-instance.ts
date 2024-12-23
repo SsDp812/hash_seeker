@@ -4,4 +4,5 @@ export interface ImageIntance {
     tg_user_guid: string
     active_status: boolean
     image_id: number
+
 }

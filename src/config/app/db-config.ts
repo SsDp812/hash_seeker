@@ -18,7 +18,11 @@ const sql = postgres(
         ':' +
         dbProps.dbPort +
         '/' +
-        dbProps.dbName
+        dbProps.dbName,
+        {
+            max: process.env.DB_MAX_POOL_SIZE as unknown as number,
+            idle_timeout: process.env.DB_TIMEOUT as unknown as number
+        }
 )
 
 export default sql

@@ -1,9 +1,9 @@
 import sql from "../config/app/db-config";
 import { logger } from "../config/app/logger-config";
-import type { ImageIntance } from "../model/image-instance";
+import type { ActiveImageInstance, ImageIntance } from "../model/image-instance";
 
 const images_instance_table_name = 'image_user_instance'
-
+const images_table_name = 'image_info'
 
 export async function getAllInstancesByUserGuid(tgUserGuid: string) {
     try {
@@ -22,6 +22,28 @@ export async function getAllInstancesByUserGuid(tgUserGuid: string) {
         return undefined;
     }
 }
+
+
+export async function getActiveInstanceByUserGuid(tgUserGuid: string) {
+    try {
+        const instances = await sql`
+            SELECT ${sql(images_instance_table_name)}.id, ${sql(images_instance_table_name)}.tg_user_id, active_status, image_id, image_name FROM ${sql(images_instance_table_name)}
+            INNER JOIN ${sql(images_table_name)} on ${sql(images_instance_table_name)}.image_id = ${sql(images_table_name)}.id
+            WHERE tg_user_guid = ${tgUserGuid}
+            AND active_status is true LIMIT 1;
+        `;
+
+        if (instances.count === 0 || instances.length === 0) {
+            return [];
+        } else {
+            return instances.at(0) as ActiveImageInstance;
+        }
+    } catch (error) {
+        logger.error('Ошибка при получении всех экземпляров по tg_user_guid:', error);
+        return undefined;
+    }
+}
+
 
 export async function createImageUserInstance(newIntance : ImageIntance) {
     try {

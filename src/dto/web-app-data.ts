@@ -4,7 +4,6 @@ export interface WebAppData {
         auth_date: string,
         hash: string,
         user_id: string,
-        username: string,
-        lang_code: string
+        username: string
     }
 }

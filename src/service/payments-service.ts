@@ -5,7 +5,7 @@ import { PaymentTitles } from "../config/mechanic/order-titles-config"
 import { OrderPrices } from "../config/mechanic/order-prices-config"
 
 
-export const generateLinkForBuyNewImage = async (imageId: number, userId: number) => {
+export const generateLinkForBuyNewImage = async (imageId: number) => {
     let payload : Payload = {
             date: Date.now(),
             donateType: DonateType.IMAGE,
@@ -16,7 +16,7 @@ export const generateLinkForBuyNewImage = async (imageId: number, userId: number
 }
 
 
-export const generateLinkForBoostEnergy = async (userId: number) => {
+export const generateLinkForBoostEnergy = async () => {
     let payload : Payload = {
             date: Date.now(),
             donateType: DonateType.ENERGY_BOOST,
@@ -26,7 +26,7 @@ export const generateLinkForBoostEnergy = async (userId: number) => {
         PaymentTitles.updateEnergyDescription,payload,OrderPrices.energyStarsPrice);
 }
 
-export const generateLinkForBoostMiningLevel = async (userId: number) => {
+export const generateLinkForBoostMiningLevel = async () => {
     let payload : Payload = {
             date: Date.now(),
             donateType: DonateType.MINING_BOOST,

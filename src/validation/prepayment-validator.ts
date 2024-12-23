@@ -19,7 +19,9 @@ export const validateCanBoostMiningLevel = async (tgGuid : string) => {
 export const canBuyImage = async (tgGuid: string, imageId: number) => {
     try {
         let images: ImageIntance[] = await getPurchesedImagesByUser(tgGuid);
-        const imageExists = images.some(image => image.id === imageId);
+        console.log(images)
+        console.log(imageId)
+        const imageExists = images.some(image => image.image_id == imageId);
         return !imageExists;
     } catch (error) {
         logger.error('Ошибка при проверке возможности покупки изображения:', error);

@@ -8,8 +8,8 @@ import { logger } from '../config/app/logger-config.ts'
 
 const authMiddleware = async (context: Context) => {
     try {
-        const body = await context.request.json()
-        let webData: WebAppData = body as WebAppData
+        const body = await context.body
+        let webData: WebAppData = body as unknown as WebAppData
         let valid = AuthHelper.isValid(
             webData.web_app_data.data_check_string,
             BotConfig.botToken,
@@ -28,7 +28,7 @@ const authMiddleware = async (context: Context) => {
              return user
          })) as User;
     } catch (error) {
-        logger.error
+        logger.error(error)
         return context.error(401, 'Unauthorized');
     }
 }

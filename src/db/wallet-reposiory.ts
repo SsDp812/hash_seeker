@@ -1,6 +1,7 @@
 import type { Wallet } from '../model/wallet.ts'
 import sql from '../config/app/db-config.ts'
 import { logger } from '../config/app/logger-config.ts'
+import MiningBoostLevel from '../common/mining-boost-level.ts'
 
 const wallets_table_name = 'user_wallets_tg_info'
 
@@ -73,7 +74,7 @@ export async function increaseMaxEnergy(tgUserId: number, increaseAmount: number
         try {
             const wallet = await sql`
                 SELECT * FROM ${sql(wallets_table_name)}
-                WHERE tg_user_id = ${tgGuid}
+                WHERE tg_guid = ${tgGuid}
                 LIMIT 1;
             `;
     
@@ -83,8 +84,31 @@ export async function increaseMaxEnergy(tgUserId: number, increaseAmount: number
                 return wallet.at(0) as Wallet;
             }
         } catch (error) {
-            logger.error('Ошибка при поиске кошелька по tg_user_id:', error);
+            logger.error('Ошибка при поиске кошелька по tg_guid:', error);
             return undefined;
         }
     }
     
+    export async function updateMiningBoostLevel(tgUserId: number) {
+        try {
+            const updatedWallets = await sql`
+                UPDATE ${sql(wallets_table_name)}
+                SET mining_boost_level = CASE
+                    WHEN mining_boost_level = ${MiningBoostLevel.None} THEN ${MiningBoostLevel.Lite}
+                    WHEN mining_boost_level = ${MiningBoostLevel.Lite} THEN ${MiningBoostLevel.HARD}
+                    ELSE mining_boost_level
+                END
+                WHERE tg_user_id = ${tgUserId}
+                RETURNING *;
+            `;
+    
+            if (updatedWallets.count === 0 || updatedWallets.length === 0) {
+                return null;
+            } else {
+                return updatedWallets;
+            }
+        } catch (error) {
+            logger.error('Ошибка при обновлении уровня майнинга:', error);
+            return undefined;
+        }
+    }

@@ -2,6 +2,12 @@ import { Bot, Context} from 'grammy'
 import BotConfig from '../config/app/bot-config'
 import type { Payload } from '../dto/payments-payload';
 import { logger } from '../config/app/logger-config';
+import { DonateType } from '../common/donate-type';
+import { buyNewAvatar } from '../service/image-service';
+import { searchByTgGuid } from '../db/user-repository';
+import type { User } from '../model/user';
+import { boostEnergyCapicity, boostWallet } from '../service/wallet-service';
+import { canBuyImage, validateCanBoostMiningLevel } from '../validation/prepayment-validator';
 
 
 export class BotManager{
@@ -33,10 +39,35 @@ export class BotManager{
     private static initializeBotEventHandlers(){
         BotManager.botIntsance.on('pre_checkout_query', async (ctx: Context) => {
             try {
-                //TODO проверять/валидировать возможно ли покупка с помощью prepayment-validator
+                let transactionPayload : Payload = JSON.parse(ctx.preCheckoutQuery?.invoice_payload as string)
+                let user : User = await searchByTgGuid(ctx.preCheckoutQuery?.from.id as unknown as string) as unknown as User
+                    if(user == null || user == undefined){
+                        logger.error("User not found precheckout ", transactionPayload,ctx.message?.from.id as unknown as string)
+                        return await ctx.answerPreCheckoutQuery(false,{
+                            error_message: "Вы еще не зарегистрированы в приложении!"
+                        });
+                    }else{
+                        if(transactionPayload.donateType === DonateType.IMAGE){
+                            let valid : Boolean = await canBuyImage(user.tg_guid,transactionPayload.objectId);
+                            console.log(valid)
+                            if(!valid){
+                                return await ctx.answerPreCheckoutQuery(false,{
+                                    error_message: "Аватар уже куплен!"
+                                });
+                            }
+                        }else if(transactionPayload.donateType === DonateType.MINING_BOOST){
+                            let valid : Boolean = await validateCanBoostMiningLevel(user.tg_guid);
+                            if(!valid){
+                                return await ctx.answerPreCheckoutQuery(false,{
+                                    error_message: "Вы прокачали уровень майнинга до максимального!"
+                                });
+                            }
+                        }
+                    }
                 return await ctx.answerPreCheckoutQuery(true);
             } catch (e) {
                 logger.error('answerPreCheckoutQuery failed');
+                return await ctx.answerPreCheckoutQuery(false);
             }
         })
 
@@ -44,6 +75,20 @@ export class BotManager{
             try {
                 if (!ctx.msg.successful_payment) {
                     logger.error(ctx.message);
+                }else{
+                    let transactionPayload : Payload = JSON.parse(ctx.update.message?.successful_payment?.invoice_payload as string)
+                    let user : User = await searchByTgGuid(ctx.message?.from.id as unknown as string) as unknown as User
+                    if(user == null || user == undefined){
+                        logger.error("User not found after payment ", transactionPayload,ctx.message?.from.id as unknown as string)
+                    }else{
+                        if(transactionPayload.donateType === DonateType.IMAGE){
+                            await buyNewAvatar(user.tg_guid,user.id,transactionPayload.objectId);
+                        }else if(transactionPayload.donateType === DonateType.ENERGY_BOOST){
+                            await boostEnergyCapicity(user.id)
+                        }else if(transactionPayload.donateType === DonateType.MINING_BOOST){
+                            await boostWallet(user.id);
+                        }
+                    }
                 }
             } catch (e) {
                 logger.error('successfull payment failed');

@@ -1,7 +1,7 @@
 import type { Wallet } from '../model/wallet'
 import AccountLogicConfig from '../config/mechanic/account-logic-config.ts'
 import MiningBoostLevel from '../common/mining-boost-level'
-import { saveNewWallet, increaseMaxEnergy, increaseMaxEnergyAndCharge,findWalletByTgGuid } from '../db/wallet-reposiory.ts'
+import { saveNewWallet, increaseMaxEnergy, increaseMaxEnergyAndCharge,findWalletByTgGuid, updateMiningBoostLevel } from '../db/wallet-reposiory.ts'
 
 export const createNewWallet = async (userId: number,tgGuid : string) => {
     let wallet: Wallet = {
@@ -27,4 +27,7 @@ export const boostEnergyCapicity = async (userId : number) => {
 
 export const searchWallet = async (tgGuid : string) => {
     return await findWalletByTgGuid(tgGuid).then(wallet => {return wallet as Wallet;});
+}
+export const boostWallet = async (userId: number) => {
+    return await updateMiningBoostLevel(userId);
 }

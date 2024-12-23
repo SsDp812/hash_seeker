@@ -24,10 +24,15 @@ export const getCardsInfo = async (tgGuid: string) => {
     let imageDtos: ImagerDto[] = [];
     images.forEach(image => {
         const isPurchased = purchasedImages.some(purchased => purchased.image_id === image.id);
+        let isActiveStatus = false;
+        if(isPurchased){
+            const purchasedImage = purchasedImages.find(purchased => purchased.image_id === image.id);
+            isActiveStatus = purchasedImage?.active_status as boolean;
+        }
         const imageDto: ImagerDto = {
             image_name: image.image_name,
             is_purchesed: isPurchased,
-            is_active: true,
+            is_active: isActiveStatus,
             image_id: image.id,
         };
         imageDtos.push(imageDto);
