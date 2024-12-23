@@ -3,6 +3,7 @@ import type { User } from '../model/user.ts'
 import { saveNewWallet } from '../db/wallet-reposiory.ts'
 import { createNewWallet } from './wallet-service.ts'
 import type { Wallet } from '../model/wallet.ts'
+import { generateRandomAvatarForNewUser } from './image-service.ts'
 
 
 
@@ -29,7 +30,7 @@ const registerNewUser = async (tgGuid: string, username: string) => {
         }
         return user as User
     })
-
+    let successImageGeneration : any = generateRandomAvatarForNewUser(user.tg_guid,user.id);
     return user
 }
 

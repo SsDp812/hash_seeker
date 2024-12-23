@@ -5,11 +5,20 @@ import { BotManager } from './telegram/bot-manager.ts'
 import authMiddleware from './middleware/auth-middleware.ts'
 import { initializePaymentsRoutes } from './web/rest/payments-controllers.ts'
 import { initializeStartAvatars } from './service/image-service.ts'
+import staticPlugin from '@elysiajs/static'
+import { WebSockerManager } from './web/websocket-manager.ts'
+
+
 export const app = new Elysia();
 
-app.all('/', authMiddleware);
-initializeStartAvatars();
-initializePaymentsRoutes(app);
-app.listen(ServerConfig.port);
+app.all('/api', authMiddleware);
+app.use(staticPlugin())
+
+const avatarsInit : any = await initializeStartAvatars();
+const paymentsInit : any = await initializePaymentsRoutes(app);
+WebSockerManager.startWebSocketServer(app);
 BotManager.startBot();
+app.listen(ServerConfig.port);
 logger.info('Сервер запущен на порту ' + ServerConfig.port);
+
+

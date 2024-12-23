@@ -39,3 +39,22 @@ export async function saveNewImage(image: ImageAvatar) {
         return undefined;
     }
 }
+
+export async function getRandomImageId() {
+    try {
+        const images = await sql`
+            SELECT id FROM ${sql(images_table_name)}
+            ORDER BY RANDOM()
+            LIMIT 1;
+        `;
+
+        if (images.count === 0 || images.length === 0) {
+            return null;
+        } else {
+            return images[0] ;
+        }
+    } catch (error) {
+        logger.error('Ошибка при получении случайного изображения:', error);
+        return undefined;
+    }
+}

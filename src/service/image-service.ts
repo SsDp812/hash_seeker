@@ -1,4 +1,4 @@
-import { getAllImages, saveNewImage } from "../db/image-repository"
+import { getAllImages, saveNewImage, getRandomImageId } from "../db/image-repository"
 import { getAllInstancesByUserGuid,createImageUserInstance, setActiveImage} from "../db/image-instance-repository";
 import type { ImageAvatar } from "../model/image";
 import type { ImageIntance } from "../model/image-instance";
@@ -55,11 +55,16 @@ export const chooseAnotherAvatar = async (tgGuid : string, imageId : number) => 
     return await setActiveImage(tgGuid,imageId);
 }
 
+export const generateRandomAvatarForNewUser = async (tgGuid : string, userId: number) => {
+    let id : number = await getRandomImageId().then(id => {return id;});
+    return await buyNewAvatar(tgGuid,userId,id).then(imageInstance => {return imageInstance;});
+}
+
 export const initializeStartAvatars = async() => {
     let fileNames = []
     let images: ImageAvatar[] = await getAll().then(images => {return images;});
     if(images.length == 0){
-        const directory = path.join(__dirname, ServerConfig.staticFilesPath);
+        const directory = path.join(__dirname, ServerConfig.staticFilesPathForInit);
         try {
             const files = fs.readdirSync(directory);
             fileNames = files.filter(file => {
