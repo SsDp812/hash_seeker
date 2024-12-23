@@ -51,7 +51,7 @@ export async function getRandomImageId() {
         if (images.count === 0 || images.length === 0) {
             return null;
         } else {
-            return images[0] ;
+            return images[0].id ;
         }
     } catch (error) {
         logger.error('Ошибка при получении случайного изображения:', error);

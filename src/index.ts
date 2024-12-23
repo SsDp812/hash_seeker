@@ -7,6 +7,7 @@ import { initializePaymentsRoutes } from './web/rest/payments-controllers.ts'
 import { initializeStartAvatars } from './service/image-service.ts'
 import staticPlugin from '@elysiajs/static'
 import { WebSockerManager } from './web/websocket-manager.ts'
+import {initializeTasksRoutes} from "./web/rest/tasks-controllers.ts";
 
 
 export const app = new Elysia();
@@ -16,6 +17,7 @@ app.use(staticPlugin())
 
 const avatarsInit : any = await initializeStartAvatars();
 const paymentsInit : any = await initializePaymentsRoutes(app);
+const tasksInit: any = await initializeTasksRoutes(app);
 WebSockerManager.startWebSocketServer(app);
 BotManager.startBot();
 app.listen(ServerConfig.port);

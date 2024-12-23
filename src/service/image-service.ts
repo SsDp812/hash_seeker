@@ -56,7 +56,7 @@ export const chooseAnotherAvatar = async (tgGuid : string, imageId : number) => 
 }
 
 export const generateRandomAvatarForNewUser = async (tgGuid : string, userId: number) => {
-    let id : number = await getRandomImageId().then(id => {return id;});
+    let id : number = await getRandomImageId();
     return await buyNewAvatar(tgGuid,userId,id).then(imageInstance => {return imageInstance;});
 }
 
