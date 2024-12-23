@@ -49,7 +49,6 @@ export class BotManager{
                     }else{
                         if(transactionPayload.donateType === DonateType.IMAGE){
                             let valid : Boolean = await canBuyImage(user.tg_guid,transactionPayload.objectId);
-                            console.log(valid)
                             if(!valid){
                                 return await ctx.answerPreCheckoutQuery(false,{
                                     error_message: "Аватар уже куплен!"
@@ -94,5 +93,21 @@ export class BotManager{
                 logger.error('successfull payment failed');
             }
         })
+    }
+    public static async isUserSubscribed(userId: number): Promise<boolean> {
+        try {
+            const chatMember = await BotManager.botIntsance.api.getChatMember(BotConfig.subscribeChannel, userId);
+            console.log('chat', chatMember)
+            if(chatMember == null || chatMember == undefined){
+                console.log('none')
+                return false;
+            }
+            console.log(chatMember)
+            const statuses = ["member", "administrator", "creator"];
+            return statuses.includes(chatMember.status);
+        } catch (error) {
+            logger.error("Ошибка при проверке подписки:", error);
+            return false;
+        }
     }
 }

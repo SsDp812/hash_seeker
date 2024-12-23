@@ -19,8 +19,6 @@ export const validateCanBoostMiningLevel = async (tgGuid : string) => {
 export const canBuyImage = async (tgGuid: string, imageId: number) => {
     try {
         let images: ImageIntance[] = await getPurchesedImagesByUser(tgGuid);
-        console.log(images)
-        console.log(imageId)
         const imageExists = images.some(image => image.image_id == imageId);
         return !imageExists;
     } catch (error) {

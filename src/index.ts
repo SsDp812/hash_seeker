@@ -9,6 +9,7 @@ import staticPlugin from '@elysiajs/static'
 import { WebSockerManager } from './web/websocket-manager.ts'
 import {initializeTasksRoutes} from "./web/rest/tasks-controllers.ts";
 import { initializeAccountRoutes } from './web/rest/account-controllers.ts'
+import { initializeStartTasks } from './service/task-manager.ts'
 
 
 export const app = new Elysia();
@@ -19,6 +20,7 @@ const avatarsInit : any = await initializeStartAvatars();
 const paymentsInit : any = await initializePaymentsRoutes(app);
 const tasksInit: any = await initializeTasksRoutes(app);
 const accountsInit : any = await initializeAccountRoutes(app);
+const initTasks : any = await initializeStartTasks();
 WebSockerManager.startWebSocketServer(app);
 BotManager.startBot();
 app.listen(ServerConfig.port);

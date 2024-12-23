@@ -21,7 +21,6 @@ export const initializeAccountRoutes = async (app : Elysia) => {
         let webData: WebAppData = context.body as WebAppData;
         let purchasedImages: ImageIntance[] = await getPurchesedImagesByUser(webData.web_app_data.user_id) as ImageIntance[];
         const isPurchased = purchasedImages.some(purchased => purchased.image_id == id);
-        console.log(isPurchased)
         if(isPurchased){
             await chooseAnotherAvatar(webData.web_app_data.user_id,id);
         }
