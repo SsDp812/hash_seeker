@@ -89,3 +89,12 @@ CREATE TABLE ton_wallets (
     wallet_address VARCHAR(255) NOT NULL UNIQUE,
     date_created TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE starts_transactions (
+    id SERIAL PRIMARY KEY,
+    obj_id VARCHAR(255) NOT NULL,
+    date_transaction TIMESTAMPTZ NOT NULL,
+    tg_guid VARCHAR(255) NOT NULL,
+    price NUMERIC(15, 2) NOT NULL,
+    donate_type donate_type NOT NULL
+);

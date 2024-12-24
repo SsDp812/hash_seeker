@@ -3,11 +3,16 @@ import { generateLinkForBoostEnergy,generateLinkForBuyNewImage,generateLinkForBo
 import { type WebAppData } from "../../dto/web-app-data";
 import authMiddleware from "../../middleware/auth-middleware";
 import { connectTonWallet, getTonWalletInfo } from "../../service/managers/ton-wallet-manager";
+import { isNumeric, isTonWalletAddress } from "../../validation/injection-validator";
 
 export const initializePaymentsRoutes = async (app : Elysia) => {
 
     app.post('api/buyNewImage/:id', async (context: { body: any; headers: any; params: any }) => {
         const { id } = context.params;
+        if(!isNumeric(id)){
+            console.warn("Paramter is not numeric, ", id)
+            return {succcess: false}
+        }
         let webData: WebAppData = context.body as WebAppData
         return { invoiceLink: await generateLinkForBuyNewImage(id) }
     },
@@ -32,6 +37,10 @@ export const initializePaymentsRoutes = async (app : Elysia) => {
 
     app.post('api/connect-wallet/:address', async (context) => {
         const { address } = context.params;
+        if(!isTonWalletAddress(address)){
+            console.warn("Paramter is not ton wallet, ", address);
+            return {succcess: false}
+        }
         let webData: WebAppData = context.body as WebAppData
         return { data: await connectTonWallet(webData.web_app_data.user_id,address) }
     },

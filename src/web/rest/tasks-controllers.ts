@@ -3,6 +3,7 @@ import { generateLinkForBoostEnergy,generateLinkForBuyNewImage,generateLinkForBo
 import { completeTask, getTasks } from "../../service/task-service.ts";
 import { type WebAppData } from "../../dto/web-app-data";
 import authMiddleware from "../../middleware/auth-middleware.ts";
+import { isNumeric } from "../../validation/injection-validator.ts";
 
 
 export const initializeTasksRoutes = async (app : Elysia) => {
@@ -20,6 +21,10 @@ export const initializeTasksRoutes = async (app : Elysia) => {
 
     app.post('api/completeTask/:id', async (context: { body: any; headers: any; params: any }) => {
         const { id } = context.params;
+        if(!isNumeric(id)){
+            console.warn("Paramter is not numeric, ", id)
+            return {succcess: false}
+        }
         let webData: WebAppData = context.body as WebAppData
 
         return {

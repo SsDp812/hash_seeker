@@ -1,3 +1,4 @@
+import BotConfig from '../config/app/bot-config.ts'
 import MiningLogicConfig from '../config/mechanic/mining-logic-config.ts'
 import { OrderPrices } from '../config/mechanic/order-prices-config.ts'
 import { getActiveInstanceByUserGuid } from '../db/image-instance-repository.ts'
@@ -64,4 +65,11 @@ export const connectReferealLink = async(tgGuid : string, referalCode : string) 
         await chargeWallet(referal.id,OrderPrices.rewardForFriend);
         return {success: true, message: ""}
     }
+}
+
+export const getReferalLink = async(tgGuid : string) => {
+    let user : User = await searchByTgGuid(tgGuid).then((user) => {
+        return user as User
+    })
+    return {link: BotConfig.botInviteLink + user.referal_private_code,code: user.referal_private_code}
 }

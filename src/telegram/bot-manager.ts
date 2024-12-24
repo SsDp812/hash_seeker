@@ -8,6 +8,7 @@ import { searchByTgGuid } from '../db/user-repository';
 import type { User } from '../model/user';
 import { boostEnergyCapicity, boostWallet } from '../service/wallet-service';
 import { canBuyImage, validateCanBoostMiningLevel } from '../validation/prepayment-validator';
+import { saveTransaction } from '../service/managers/transaction-manager';
 
 
 export class BotManager{
@@ -87,6 +88,7 @@ export class BotManager{
                         }else if(transactionPayload.donateType === DonateType.MINING_BOOST){
                             await boostWallet(user.id);
                         }
+                        await saveTransaction(user.tg_guid,transactionPayload,0) //TODO достать цену из мета данных
                     }
                 }
             } catch (e) {
