@@ -18,7 +18,7 @@ export const getPurchesedImagesByUser = async (tgGuid : string) => {
 }
 
 export const getCardsInfo = async (tgGuid: string) => {
-    let images: ImageAvatar[] = await getAll().then(images => {return images;});
+    let images: ImageAvatar[] = await getAll();
     let purchasedImages: ImageIntance[] = await getPurchesedImagesByUser(tgGuid).then(images => {return images;});
 
     let imageDtos: ImagerDto[] = [];
@@ -67,7 +67,7 @@ export const generateRandomAvatarForNewUser = async (tgGuid : string, userId: nu
 
 export const initializeStartAvatars = async() => {
     let fileNames = []
-    let images: ImageAvatar[] = await getAll().then(images => {return images;});
+    let images: ImageAvatar[] = await getAll();
     if(images.length == 0){
         const directory = path.join(__dirname, ServerConfig.staticFilesPathForInit);
         try {

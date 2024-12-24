@@ -7,17 +7,69 @@ import fs from 'fs';
 import path from 'path';
 import ServerConfig from "../config/app/server-config";
 import { logger } from "../config/app/logger-config";
-import TasksRepository from "../db/tasks-repository.ts";
+import { getLatestTaskInstance, saveTaskInstance } from "../db/tasks-repository";
+import type { AppLanguage } from "../common/app-languages";
+import type { UserTaskForUI, UserTaskInfoFromDb } from "../dto/task-db-dto";
+import { tryCompleteTask } from "./task-manager";
+import type { TaskInstance } from "../model/task-instance";
+import { searchByTgGuid } from "../db/user-repository";
+import type { User } from "../model/user";
+import type { Task } from "../model/task";
+import { chargeWallet } from "../db/wallet-reposiory";
+import { OrderPrices } from "../config/mechanic/order-prices-config";
 
 
-class TaskService {
-    static async getUsualTasks (tgGuidId: string) {
-        return await TasksRepository.getUsualTasksByUserID(tgGuidId)
-    }
 
-    static async getDailyTasks (tgGuidId: string) {
-        return await TasksRepository.getDailyTasksByUserID(tgGuidId)
-    }
+export const getTasks = async(tgGuid : string, lang : AppLanguage) => {
+    let dbTasks : UserTaskInfoFromDb[] = await getLatestTaskInstance(tgGuid, lang) as unknown as UserTaskInfoFromDb[];
+    let uiTasks : UserTaskForUI[] = []
+    dbTasks.forEach(async dbTask =>{
+        uiTasks.push(
+            {
+                ...dbTask,
+                isDone: await isTaskDone(dbTask.date_completed,dbTask.isDaily)
+            }
+        )
+    })
+    return uiTasks;
 }
 
-export default TaskService
+const isTaskDone = async (dateCompleted: Date | null | undefined,isDaily : boolean): Promise<boolean> => {
+    console.log(dateCompleted)
+    if(dateCompleted && !isDaily){
+        return true;
+    }
+    if (!dateCompleted) {
+        return false;
+    }
+
+    const now = new Date();
+    return dateCompleted >= now;
+};
+
+export const completeTask = async (tgGuid: string, taskId : number): Promise<boolean> => {
+    let result = await tryCompleteTask(tgGuid,taskId);
+    if(!result.success){
+        return false;
+    }
+    let user : User = await searchByTgGuid(tgGuid) as User;
+    if(user == null || user == undefined){
+        return false;
+    }
+    let taskInstance : TaskInstance = {
+        id: 0,
+        task_id: taskId,
+        user_id: user.id,
+        user_tg_guid: tgGuid,
+        date_completed: new Date(),
+        energy_reward_catched: result.energyReward as number
+    }
+    try{
+        await saveTaskInstance(taskInstance);
+        await chargeWallet(user.id,result.energyReward as number);
+    }catch(error){
+        logger.error(error)
+        return false;
+    }
+    return true;
+};

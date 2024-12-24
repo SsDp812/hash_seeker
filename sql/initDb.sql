@@ -32,3 +32,31 @@ CREATE TABLE image_user_instance(
 	active_status boolean NOT NULL,
 	image_id integer REFERENCES image_info NOT NULL
 );
+
+
+CREATE TABLE tasks (
+    id SERIAL PRIMARY KEY,                
+    is_daily BOOLEAN NOT NULL,          
+    energy_reward NUMERIC(30,10) NOT NULL,
+    link VARCHAR(255),
+    task_type VARCHAR(50) NOT NULL,
+	task_available boolean NOT NULL
+);
+
+CREATE TABLE task_info (
+    id SERIAL PRIMARY KEY,              
+    task_id INTEGER NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+    app_language VARCHAR(10) NOT NULL,
+    title VARCHAR(255) NOT NULL,  
+    task_description TEXT NOT NULL
+);
+
+CREATE TABLE task_instances (
+    id SERIAL PRIMARY KEY,  
+	task_id INTEGER REFERENCES tasks NOT NULL,
+    user_id INTEGER REFERENCES tg_bot_users NOT NULL,               
+    user_tg_guid VARCHAR(255) NOT NULL,     
+    date_completed TIMESTAMPTZ NOT NULL,
+    energy_reward_catched NUMERIC(30,10) NOT NULL
+);
+

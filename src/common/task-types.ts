@@ -1,3 +1,6 @@
-enum TaskType { TELEGRAM, OTHER }
+enum TaskType { 
+    TELEGRAM = 'TELEGRAM',
+    OTHER = 'OTHER'
+ }
 
 export default TaskType

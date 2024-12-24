@@ -1,0 +1,59 @@
+[
+    {
+        "is_daily": true,
+        "energy_reward": 100,
+        "link": "https://www.instagram.com/",
+        "task_type": "OTHER",
+        "task_available": true,
+        "info": [
+            {
+                "app_language": "RU",
+                "title": "Подпишитесь на наш инстаграм",
+                "task_description": "Для выполнения задания вам необходимо подписаться на наш инстаграм канал"
+            },
+            {
+                "app_language": "EN",
+                "title": "Subscribe for our instagram",
+                "task_description": "Please subscribe for our instagram blog"
+            }
+        ]
+    },
+    {
+        "is_daily": true,
+        "energy_reward": 100,
+        "link": "https://vk.com/",
+        "task_type": "OTHER",
+        "task_available": true,
+        "info": [
+            {
+                "app_language": "RU",
+                "title": "Подпишитесь на наш ВК",
+                "task_description": "Для выполнения задания вам необходимо подписаться на наш ВК"
+            },
+            {
+                "app_language": "EN",
+                "title": "Subscribe for our VK",
+                "task_description": "Please subscribe for our VK"
+            }
+        ]
+    },
+    {
+        "is_daily": false,
+        "energy_reward": 500,
+        "link": "https://telegram.com/",
+        "task_type": "TELEGRAM",
+        "task_available": true,
+        "info": [
+            {
+                "app_language": "RU",
+                "title": "Подпишитесь на наш Telegram канал",
+                "task_description": "Для выполнения задания вам необходимо подписаться на наш Telegram"
+            },
+            {
+                "app_language": "EN",
+                "title": "Subscribe for our TG",
+                "task_description": "Please subscribe for our Telegram"
+            }
+        ]
+    }
+]

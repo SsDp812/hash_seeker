@@ -7,7 +7,6 @@ const wallets_table_name = 'user_wallets_tg_info'
 
 export async function saveNewWallet(wallet: Wallet) {
     try {
-        console.log(wallet)
         const id = await sql`
             INSERT INTO ${sql(wallets_table_name)} (id,tg_user_id,tg_guid,coins_amount,energy_amount,max_energy_capicity,testing_energy_amount,mining_boost_level)
             VALUES (default,${wallet.tg_user_id},${wallet.tg_guid},${wallet.coins_amount},${wallet.energy_amount},${wallet.max_energy_capicity},${wallet.testing_energy_amount},
@@ -67,6 +66,27 @@ export async function increaseMaxEnergy(tgUserId: number, increaseAmount: number
         } catch (error) {
             logger.error('Ошибка при увеличении max_energy_capicity и energy_amount:', error);
             return undefined
+        }
+    }
+
+    export async function chargeWallet(userId: number, amount: number) {
+        try {
+            const result = await sql`
+                UPDATE ${sql(wallets_table_name)}
+                SET 
+                    energy_amount = LEAST(energy_amount + ${amount}, max_energy_capicity)
+                WHERE tg_user_id = ${userId}
+                RETURNING *;
+            `;
+    
+            if (result.count === 0 || result.at(0) === undefined || result.at(0) === null) {
+                return null;
+            } else {
+                return result.at(0) as Wallet;
+            }
+        } catch (error) {
+            logger.error('Ошибка при обновлении energy_amount:', error);
+            return undefined;
         }
     }
 
