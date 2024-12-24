@@ -1,7 +1,7 @@
 import type Elysia from "elysia";
 import { type WebAppData } from "../../dto/web-app-data";
 import authMiddleware from "../../middleware/auth-middleware";
-import { getTgUserInfo } from "../../service/account-service";
+import { getTgUserInfo, getTopUsersPage } from "../../service/account-service";
 import { chooseAnotherAvatar, getCardsInfo, getPurchesedImagesByUser } from "../../service/image-service";
 import type { ImageIntance } from "../../model/image-instance";
 import { getBasicAppInfo } from "../../service/base-mechanic-service";
@@ -41,6 +41,15 @@ export const initializeAccountRoutes = async (app : Elysia) => {
     app.post('api/get-avatars-info', async (context: { body: any; headers: any; params: any }) => {
         let webData: WebAppData = context.body as WebAppData
         return { data: await getCardsInfo(webData.web_app_data.user_id) }
+    },
+    {
+        beforeHandle: authMiddleware
+    })
+
+    app.post('api/users-top/:pageLimit', async (context: { body: any; headers: any; params: any }) => {
+        const { pageLimit } = context.params;
+        let webData: WebAppData = context.body as WebAppData
+        return { data: await getTopUsersPage(pageLimit) }
     },
     {
         beforeHandle: authMiddleware

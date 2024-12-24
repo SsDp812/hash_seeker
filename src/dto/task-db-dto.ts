@@ -10,7 +10,7 @@ export interface UserTaskInfoFromDb{
     app_language: AppLanguage
     link: string
     energy_reward: number
-    isDaily: boolean
+    is_daily: boolean
     task_type: TaskType
 }
 

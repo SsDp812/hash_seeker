@@ -27,16 +27,18 @@ export const getTasks = async(tgGuid : string, lang : AppLanguage) => {
         uiTasks.push(
             {
                 ...dbTask,
-                isDone: await isTaskDone(dbTask.date_completed,dbTask.isDaily)
+                isDone: await isTaskDone(dbTask.date_completed,dbTask.is_daily)
             }
         )
     })
     return uiTasks;
 }
 
-const isTaskDone = async (dateCompleted: Date | null | undefined,isDaily : boolean): Promise<boolean> => {
-    console.log(dateCompleted)
-    if(dateCompleted && !isDaily){
+export const isTaskDone = async (
+    dateCompleted: Date | null | undefined,
+    isDaily: boolean
+): Promise<boolean> => {
+    if (dateCompleted && !isDaily) {
         return true;
     }
     if (!dateCompleted) {
@@ -44,7 +46,14 @@ const isTaskDone = async (dateCompleted: Date | null | undefined,isDaily : boole
     }
 
     const now = new Date();
-    return dateCompleted >= now;
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const completedDate = new Date(
+        dateCompleted.getFullYear(),
+        dateCompleted.getMonth(),
+        dateCompleted.getDate()
+    );
+
+    return completedDate >= today;
 };
 
 export const completeTask = async (tgGuid: string, taskId : number): Promise<boolean> => {

@@ -10,5 +10,10 @@ const MiningLogicConfig = {
         .BOOSTER_COEF_FOR_TIME as unknown as number,
     minimalOnlineLimit: process.env.MINIMAL_ONLINE_LIMIT as unknown as number,
     hardCodeOnline: process.env.HARD_CODE_ONLINE as unknown as number,
+
+    totalEmission: process.env.TOTAL_EMISSIOM as unknown as number,
+    miningDateStart: process.env.MINING_DATE_START as string,
+    totalBlocksCount: process.env.BLOCKS_COUNT as unknown as number,
+    blockPrice: process.env.BLOCK_PRICE as unknown as number
 }
 export default MiningLogicConfig

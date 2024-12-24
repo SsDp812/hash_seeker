@@ -11,29 +11,28 @@ const tasks_instances = 'task_instances'
 export async function getLatestTaskInstance(userTgGuid: string, appLanguage: string) {
     try {
         const tasksResult = await sql`
-            SELECT
-                t.id as task_id,
-                ti.date_completed as date_completed,
-                tf.title as task_title,
-                tf.task_description as task_description,
-                tf.app_language as app_language,
-                t.link as link,
-                t.energy_reward as energy_reward,
-                t.is_daily as isDaily,
-                t.task_type as task_type
-            FROM
-                ${sql(tasks)} t
-            LEFT JOIN
-                ${sql(tasks_instances)} ti
-                ON t.id = ti.task_id
-            LEFT JOIN
-                ${sql(tasks_info)} tf
-                ON t.id = tf.task_id AND tf.app_language = ${appLanguage}
-            WHERE
-                (ti.user_tg_guid = ${userTgGuid} OR ti.user_tg_guid is NULL)AND 
-                t.task_available = true
-            ORDER BY
-                ti.date_completed DESC;
+            SELECT DISTINCT ON (t.id, ti.user_tg_guid)
+            t.id as task_id,
+            ti.date_completed as date_completed,
+            tf.title as task_title,
+            tf.task_description as task_description,
+            tf.app_language as app_language,
+            t.link as link,
+            t.energy_reward as energy_reward,
+            t.is_daily as isDaily,
+            t.task_type as task_type
+        FROM
+            ${sql(tasks)} t
+        LEFT JOIN
+            ${sql(tasks_instances)} ti
+            ON t.id = ti.task_id AND (ti.user_tg_guid = ${userTgGuid} OR ti.user_tg_guid IS NULL)
+        LEFT JOIN
+            ${sql(tasks_info)} tf
+            ON t.id = tf.task_id AND tf.app_language = ${appLanguage}
+        WHERE
+            t.task_available = true
+        ORDER BY
+            t.id, ti.user_tg_guid, ti.date_completed DESC;
         `;
 
         if (tasksResult.count == 0 || !tasksResult.at(0)) {

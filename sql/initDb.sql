@@ -60,3 +60,24 @@ CREATE TABLE task_instances (
     energy_reward_catched NUMERIC(30,10) NOT NULL
 );
 
+
+CREATE TABLE mining_blocks (
+    id SERIAL PRIMARY KEY,                    
+    hash VARCHAR(255) NOT NULL,              
+    user_tg_guid VARCHAR(255) NOT NULL,       
+    user_id INTEGER NOT NULL REFERENCES tg_bot_users,                  
+    miner_name VARCHAR(255) NOT NULL,          
+    miner_reward NUMERIC(30, 10) NOT NULL,     
+    shared_reward NUMERIC(30, 10) NOT NULL,    
+    date TIMESTAMPTZ NOT NULL DEFAULT NOW()    
+);
+
+
+
+CREATE TABLE mining_blocks_shared_info (
+    id SERIAL PRIMARY KEY,                         
+    block_id INTEGER NOT NULL REFERENCES mining_blocks(id) ON DELETE CASCADE,
+    shared_user_id INTEGER REFERENCES tg_bot_users NOT NULL,                       
+    shared_user_guid VARCHAR(255) NOT NULL, 
+    user_reward NUMERIC(30, 10) NOT NULL
+);

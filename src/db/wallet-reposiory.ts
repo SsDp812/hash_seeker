@@ -25,6 +25,24 @@ export async function saveNewWallet(wallet: Wallet) {
     }
 }
 
+export async function getTotalCoinsAmount(): Promise<number | null> {
+    try {
+        const result = await sql`
+            SELECT SUM(coins_amount) as total
+            FROM ${sql(wallets_table_name)};
+        `;
+        
+        if (result.count > 0 && result.at(0) && result.at(0).total !== null) {
+            return Number(result.at(0).total);
+        } else {
+            return 0;
+        }
+    } catch (error) {
+        logger.error('Ошибка при подсчете суммы всех балансов coins_amount:', error);
+        return null;
+    }
+}
+
 
 export async function increaseMaxEnergy(tgUserId: number, increaseAmount: number) {
     try {

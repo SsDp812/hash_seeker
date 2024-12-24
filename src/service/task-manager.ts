@@ -1,7 +1,7 @@
 import { AppLanguage } from "../common/app-languages"
 import { getTaskCount, saveTask, saveTaskInfo } from "../db/tasks-repository";
 import type { UserTaskForUI} from "../dto/task-db-dto";
-import { getTasks } from "./task-service"
+import { getTasks, isTaskDone } from "./task-service"
 import * as fs from 'fs/promises';
 import path from 'path';
 import type { Task, TaskInfo } from "../model/task";
@@ -14,8 +14,7 @@ import { BotManager } from "../telegram/bot-manager";
 export const tryCompleteTask = async(tgGuid: string, taskId : number): Promise<{ success: boolean; energyReward?: number }> => {
     let tasksDb: UserTaskForUI[] = await getTasks(tgGuid, AppLanguage.EN) as UserTaskForUI[];
 
-    const foundTask = tasksDb.find(task => Number(task.task_id) === Number(taskId)) as unknown as UserTaskForUI ;
-    console.log(foundTask)
+    const foundTask = tasksDb.find(task => Number(task.task_id) === Number(taskId)) as unknown as UserTaskForUI;
     let reward = 0
     if(foundTask != undefined){
         reward = foundTask.energy_reward
@@ -31,7 +30,7 @@ export const tryCompleteTask = async(tgGuid: string, taskId : number): Promise<{
             { success: false };
         }
     }
-    if (foundTask.isDone) {
+    if (await isTaskDone(foundTask.date_completed,foundTask.is_daily)) {
         return { success: false };
     }
     return { success: true, energyReward: reward}

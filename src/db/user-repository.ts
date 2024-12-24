@@ -1,6 +1,7 @@
 import type { User } from '../model/user.ts'
 import sql from '../config/app/db-config.ts'
 import { logger } from '../config/app/logger-config.ts'
+import type { UserInfo } from '../dto/users-top-info.ts'
 
 const users_table_name = 'tg_bot_users'
 
@@ -40,5 +41,65 @@ export async function saveNewUser(tgUser: User) {
     } catch (error) {
         logger.error('Ошибка при сохранении нового пользователя:', error)
         return undefined
+    }
+}
+
+export async function getTotalUsers() : Promise<number | null> {
+    try {
+        const users = await sql`
+            SELECT count(*) as all_count FROM ${sql(users_table_name)};
+        `
+        if (
+            users.count === 0 ||
+            users.at(0) == undefined ||
+            users.at(0) == null
+        ) {
+            return null
+        } else {
+            return users.at(0).all_count as unknown as number
+        }
+    } catch (error) {
+        logger.error('Ошибка при поиске пользователя:', error)
+        return undefined
+    }
+}
+
+export async function getTopUsersByBalance(limit: number): Promise<UserInfo[] | null> {
+    try {
+        const result = await sql`
+            SELECT 
+                tgu.tg_username as username,
+                uwti.coins_amount as balance,
+                RANK() OVER (ORDER BY uwti.coins_amount DESC, tgu.id ASC) as top,
+                ii.image_name as userImageName
+            FROM 
+                user_wallets_tg_info uwti
+            JOIN 
+                tg_bot_users tgu
+                ON uwti.tg_user_id = tgu.id
+            LEFT JOIN 
+                image_user_instance iui
+                ON iui.tg_user_id = tgu.id AND iui.active_status = true
+            LEFT JOIN 
+                image_info ii
+                ON iui.image_id = ii.id
+            ORDER BY 
+                uwti.coins_amount DESC, tgu.id ASC
+            LIMIT ${limit};
+        `;
+
+        if (result.count === 0) {
+            return [];
+        }
+
+        return result.map((row, index) => ({
+            username: row.username,
+            balance: Number(row.balance),
+            top: row.top || index + 1,
+            userImageName: row.userimagename || 'default.png',
+        }));
+    } catch (error) {
+        console.error('Ошибка при получении топа пользователей по балансу:', error);
+        return null;
     }
 }

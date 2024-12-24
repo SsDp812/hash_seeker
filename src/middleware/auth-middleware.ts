@@ -15,6 +15,7 @@ const authMiddleware = async (context: Context) => {
             BotConfig.botToken,
             webData.web_app_data.hash
         )
+        logger.debug("Hash: ", valid)
         if (!valid) return context.error(401, 'Unauthorized')
         if(BotConfig.botAuthLimit){
             if((((Date.now() as number) - (webData.web_app_data.auth_date as unknown as number) *1000) / 1000) > BotConfig.botAuthTime){
