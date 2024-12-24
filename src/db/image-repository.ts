@@ -9,6 +9,7 @@ export async function getAllImages() {
         const images = await sql`
             SELECT * FROM ${sql(images_table_name)};
         `;
+        console.log(images)
         if (images.count === 0 || images.length === 0) {
             return []; 
         } else {
