@@ -1,8 +1,9 @@
 import MiningLogicConfig from '../config/mechanic/mining-logic-config.ts'
+import { OrderPrices } from '../config/mechanic/order-prices-config.ts'
 import { getActiveInstanceByUserGuid } from '../db/image-instance-repository.ts'
 import { getMiningBlockCount } from '../db/mining-repository.ts'
-import { searchByTgGuid, saveNewUser, getTotalUsers, getTopUsersByBalance } from '../db/user-repository.ts'
-import { getTotalCoinsAmount } from '../db/wallet-reposiory.ts'
+import { searchByTgGuid, saveNewUser, getTotalUsers, getTopUsersByBalance, searchByTgReferalCode, updateReferalCodeById } from '../db/user-repository.ts'
+import { chargeWallet, getTotalCoinsAmount } from '../db/wallet-reposiory.ts'
 import type { AccountInfo } from '../dto/account-info.ts'
 import type { UserInfo, UsersTop } from '../dto/users-top-info.ts'
 import { generatePathToStaticContent } from '../helper/path-helper.ts'
@@ -51,3 +52,16 @@ export const getTopUsersPage = async (pageLimit : number) => {
     return top
 }
 
+export const connectReferealLink = async(tgGuid : string, referalCode : string) =>{
+    let user : User = await searchByTgGuid(tgGuid) as User;
+    let referal : User = await searchByTgReferalCode(referalCode) as User;
+    if(referal == null || referal == undefined){
+        return {success: false, message: "Referal code not found"};
+    }else if (user == null || user == undefined || user.referal_id != null){
+        return {success: false, message: "You are inveted yet"};
+    }else{
+        await updateReferalCodeById(user.id,referal.id)
+        await chargeWallet(referal.id,OrderPrices.rewardForFriend);
+        return {success: true, message: ""}
+    }
+}

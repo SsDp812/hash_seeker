@@ -81,3 +81,11 @@ CREATE TABLE mining_blocks_shared_info (
     shared_user_guid VARCHAR(255) NOT NULL, 
     user_reward NUMERIC(30, 10) NOT NULL
 );
+
+CREATE TABLE ton_wallets (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES tg_bot_users(id) ON DELETE CASCADE NOT NULL,
+    user_guid VARCHAR(255) NOT NULL UNIQUE,
+    wallet_address VARCHAR(255) NOT NULL UNIQUE,
+    date_created TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

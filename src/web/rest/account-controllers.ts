@@ -1,7 +1,7 @@
 import type Elysia from "elysia";
 import { type WebAppData } from "../../dto/web-app-data";
 import authMiddleware from "../../middleware/auth-middleware";
-import { getTgUserInfo, getTopUsersPage } from "../../service/account-service";
+import { connectReferealLink, getTgUserInfo, getTopUsersPage } from "../../service/account-service";
 import { chooseAnotherAvatar, getCardsInfo, getPurchesedImagesByUser } from "../../service/image-service";
 import type { ImageIntance } from "../../model/image-instance";
 import { getBasicAppInfo } from "../../service/base-mechanic-service";
@@ -50,6 +50,15 @@ export const initializeAccountRoutes = async (app : Elysia) => {
         const { pageLimit } = context.params;
         let webData: WebAppData = context.body as WebAppData
         return { data: await getTopUsersPage(pageLimit) }
+    },
+    {
+        beforeHandle: authMiddleware
+    })
+
+    app.post('api/connect-link/:referalCode', async (context: { body: any; headers: any; params: any }) => {
+        const { referalCode } = context.params;
+        let webData: WebAppData = context.body as WebAppData
+        return { data: await connectReferealLink(webData.web_app_data.user_id,referalCode) }
     },
     {
         beforeHandle: authMiddleware

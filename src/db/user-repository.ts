@@ -25,6 +25,27 @@ export async function searchByTgGuid(guid: string) {
     }
 }
 
+export async function searchByTgReferalCode(code: string) {
+    try {
+        const users = await sql`
+            SELECT * FROM ${sql(users_table_name)} WHERE referal_private_code = ${code} LIMIT 1;
+        `
+        if (
+            users.count === 0 ||
+            users.at(0) == undefined ||
+            users.at(0) == null
+        ) {
+            return null
+        } else {
+            return users.at(0) as User
+        }
+    } catch (error) {
+        logger.error('Ошибка при поиске пользователя:', error)
+        return undefined
+    }
+}
+
+
 export async function saveNewUser(tgUser: User) {
     try {
         const id = await sql`
@@ -101,5 +122,20 @@ export async function getTopUsersByBalance(limit: number): Promise<UserInfo[] | 
     } catch (error) {
         console.error('Ошибка при получении топа пользователей по балансу:', error);
         return null;
+    }
+}
+
+export async function updateReferalCodeById(userId: number, newReferalId : number): Promise<boolean> {
+    try {
+        const result = await sql`
+            UPDATE ${sql(users_table_name)}
+            SET referal_id = ${newReferalId}
+            WHERE id = ${userId};
+        `;
+        
+        return result.count > 0;
+    } catch (error) {
+        logger.error('Ошибка при обновлении реферального кода:', error);
+        return false;
     }
 }

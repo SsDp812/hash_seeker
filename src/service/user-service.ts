@@ -8,9 +8,7 @@ import { generateRandomAvatarForNewUser } from './image-service.ts'
 
 
 export const getTgUser = async (tgGuid: string, username: string) => {
-    let user : User = await searchByTgGuid(tgGuid).then((user) => {
-        return user
-    })
+    let user : User = await searchByTgGuid(tgGuid) as User;
     if (user == null) {
         user =  await registerNewUser(tgGuid, username).then(user => {return user;})
     }
@@ -18,10 +16,14 @@ export const getTgUser = async (tgGuid: string, username: string) => {
 }
 
 const registerNewUser = async (tgGuid: string, username: string) => {
+    if(username == null || username == undefined){
+        username = 'NOT_SET'
+    }
     let user: User = {
+        id: 0,
         tg_username: username,
         tg_guid: tgGuid,
-        referal_id: null, //TODO добавить рефералку если пригласили
+        referal_id: null,
         referal_private_code: generateNewReferalCode(tgGuid),
     }
     user = await saveNewUser(user).then((user) => {

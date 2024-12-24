@@ -10,7 +10,7 @@ import { logger } from "../config/app/logger-config";
 import { getLatestTaskInstance, saveTaskInstance } from "../db/tasks-repository";
 import type { AppLanguage } from "../common/app-languages";
 import type { UserTaskForUI, UserTaskInfoFromDb } from "../dto/task-db-dto";
-import { tryCompleteTask } from "./task-manager";
+import { tryCompleteTask } from "./managers/task-manager";
 import type { TaskInstance } from "../model/task-instance";
 import { searchByTgGuid } from "../db/user-repository";
 import type { User } from "../model/user";

@@ -9,13 +9,14 @@ import staticPlugin from '@elysiajs/static'
 import { WebSockerManager } from './web/websocket-manager.ts'
 import {initializeTasksRoutes} from "./web/rest/tasks-controllers.ts";
 import { initializeAccountRoutes } from './web/rest/account-controllers.ts'
-import { initializeStartTasks } from './service/task-manager.ts'
+import { initializeStartTasks } from './service/managers/task-manager.ts'
+import cors from '@elysiajs/cors'
 
 
 export const app = new Elysia();
 
 app.use(staticPlugin())
-
+app.use(cors())
 const avatarsInit : any = await initializeStartAvatars();
 const paymentsInit : any = await initializePaymentsRoutes(app);
 const tasksInit: any = await initializeTasksRoutes(app);

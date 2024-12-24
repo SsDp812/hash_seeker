@@ -1,14 +1,14 @@
-import { AppLanguage } from "../common/app-languages"
-import { getTaskCount, saveTask, saveTaskInfo } from "../db/tasks-repository";
-import type { UserTaskForUI} from "../dto/task-db-dto";
-import { getTasks, isTaskDone } from "./task-service"
+import { AppLanguage } from "../../common/app-languages"
+import { getTaskCount, saveTask, saveTaskInfo } from "../../db/tasks-repository";
+import type { UserTaskForUI} from "../../dto/task-db-dto";
+import { getTasks, isTaskDone } from "../task-service"
 import * as fs from 'fs/promises';
 import path from 'path';
-import type { Task, TaskInfo } from "../model/task";
-import { logger } from "../config/app/logger-config";
-import ServerConfig from "../config/app/server-config";
-import TaskType from "../common/task-types";
-import { BotManager } from "../telegram/bot-manager";
+import type { Task, TaskInfo } from "../../model/task";
+import { logger } from "../../config/app/logger-config";
+import ServerConfig from "../../config/app/server-config";
+import TaskType from "../../common/task-types";
+import { BotManager } from "../../telegram/bot-manager";
 
 
 export const tryCompleteTask = async(tgGuid: string, taskId : number): Promise<{ success: boolean; energyReward?: number }> => {
